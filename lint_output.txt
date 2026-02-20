@@ -1,0 +1,66 @@
+
+> nilambur-furniture@0.1.0 lint
+> eslint
+
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\admin\categories\page.tsx
+   5:18  warning  'FiTrash2' is defined but never used  @typescript-eslint/no-unused-vars
+  57:14  warning  'error' is defined but never used     @typescript-eslint/no-unused-vars
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\admin\login\page.tsx
+  34:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\admin\orders\page.tsx
+   5:10  warning  'FiCheckCircle' is defined but never used       @typescript-eslint/no-unused-vars
+   7:8   warning  'Image' is defined but never used               @typescript-eslint/no-unused-vars
+  19:18  warning  'setOrders' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\admin\page.tsx
+  75:43  warning  'i' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\admin\products\new\page.tsx
+   5:18  warning  'FiImage' is defined but never used  @typescript-eslint/no-unused-vars
+   7:10  warning  'motion' is defined but never used   @typescript-eslint/no-unused-vars
+  64:14  warning  'err' is defined but never used      @typescript-eslint/no-unused-vars
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\admin\products\page.tsx
+  20:43  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  50:70  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\api\admin\login\route.ts
+  29:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\api\categories\route.ts
+  22:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\api\products\[id]\route.ts
+  19:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  40:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  59:12  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\api\products\route.ts
+  24:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\page.tsx
+    9:24   warning  'FiShoppingCart' is defined but never used                       @typescript-eslint/no-unused-vars
+    9:82   warning  'FiTruck' is defined but never used                              @typescript-eslint/no-unused-vars
+    9:91   warning  'FiShield' is defined but never used                             @typescript-eslint/no-unused-vars
+    9:101  warning  'FiCheckCircle' is defined but never used                        @typescript-eslint/no-unused-vars
+   56:59   error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  332:161  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\products\[id]\page.tsx
+  13:42  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  52:83  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\app\products\page.tsx
+  32:48  warning  'cart' is assigned a value but never used                                                                    @typescript-eslint/no-unused-vars
+  40:47  error    Unexpected any. Specify a different type                                                                     @typescript-eslint/no-explicit-any
+  62:6   warning  React Hook useMemo has a missing dependency: 'dbProducts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\rishw\OneDrive\Desktop\nilambur-furniture\src\lib\db.ts
+   9:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Γ£û 31 problems (11 errors, 20 warnings)
+
