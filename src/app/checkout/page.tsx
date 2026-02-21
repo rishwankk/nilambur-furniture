@@ -58,6 +58,16 @@ export default function CheckoutPage() {
     setCouponError("");
   };
 
+  const loadRazorpay = () => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handlePlaceOrder = async () => {
     if (!formData.email || !formData.name || !formData.phone || !formData.address || !formData.city || !formData.postalCode) {
       alert("Please fill in all required fields.");
@@ -67,7 +77,7 @@ export default function CheckoutPage() {
     const newOrderId = `NIL-${Math.floor(Math.random() * 90000) + 10000}`;
     setOrderId(newOrderId);
 
-    try {
+    const saveOrderToDB = async (paymentStatus: string, rzpDetails?: any) => {
       const orderPayload = {
         orderId: newOrderId,
         customerInfo: {
@@ -86,16 +96,103 @@ export default function CheckoutPage() {
         discountAmount: discount,
         couponCode: appliedCoupon?.code || undefined,
         paymentMethod: paymentMethod === "razorpay" ? "Razorpay" : paymentMethod === "cod" ? "COD" : "WhatsApp",
+        paymentStatus,
+        razorpayOrderId: rzpDetails?.razorpay_order_id,
+        razorpayPaymentId: rzpDetails?.razorpay_payment_id,
       };
 
-      await fetch("/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(orderPayload),
-      });
-    } catch (error) {
-      console.error("Failed to save order", error);
+      try {
+        await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(orderPayload),
+        });
+      } catch (error) {
+        console.error("Failed to save order", error);
+      }
+    };
+
+    if (paymentMethod === "razorpay") {
+      setIsProcessing(true);
+      const res = await loadRazorpay();
+      if (!res) {
+        alert("Razorpay SDK failed to load. Please check your connection.");
+        setIsProcessing(false);
+        return;
+      }
+
+      try {
+        // 1. Create order on your backend
+        const orderResponse = await fetch("/api/razorpay/order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: total }),
+        });
+        const orderData = await orderResponse.json();
+
+        if (orderData.error) {
+          alert("Could not create Razorpay order.");
+          setIsProcessing(false);
+          return;
+        }
+
+        // 2. Open Razorpay Widget
+        const options = {
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: "Nilambur Interiors & Furniture",
+          description: `Order ${newOrderId}`,
+          order_id: orderData.id,
+          handler: async function (response: any) {
+             // 3. Verify payment signature
+             setIsProcessing(true);
+             const verifyRes = await fetch("/api/razorpay/verify", {
+               method: "POST",
+               headers: { "Content-Type": "application/json" },
+               body: JSON.stringify(response),
+             });
+             const verifyData = await verifyRes.json();
+             
+             if (verifyData.success) {
+               await saveOrderToDB("Paid", response);
+               setIsProcessing(false);
+               setIsSuccess(true);
+               clearCart();
+             } else {
+               alert("Payment verification failed. Please contact support.");
+               await saveOrderToDB("Failed", response);
+               setIsProcessing(false);
+             }
+          },
+          prefill: {
+            name: formData.name,
+            email: formData.email,
+            contact: formData.phone,
+          },
+          theme: { color: "#0f766e" },
+          modal: {
+            ondismiss: function () {
+              setIsProcessing(false);
+            }
+          }
+        };
+
+        const paymentObject = new (window as any).Razorpay(options);
+        paymentObject.open();
+
+      } catch (err) {
+        console.error(err);
+        alert("An error occurred starting payment.");
+        setIsProcessing(false);
+      }
+      return;
     }
+
+    // COD & WhatsApp Flow
+    setIsProcessing(true);
+    await saveOrderToDB("Pending");
+    setIsProcessing(false);
 
     if (paymentMethod === "whatsapp") {
       let message = `*New Order: ${newOrderId}*\n\n`;
@@ -107,21 +204,13 @@ export default function CheckoutPage() {
       if (appliedCoupon) message += `\n*Coupon:* ${appliedCoupon.code} (-₹${discount.toLocaleString("en-IN")})\n`;
       message += `\n*Total:* ₹${total.toLocaleString("en-IN")}`;
       
-      window.open(`https://wa.me/919876543210?text=${encodeURIComponent(message)}`, "_blank");
+      window.open(`https://wa.me/919633772866?text=${encodeURIComponent(message)}`, "_blank");
       setIsSuccess(true);
       clearCart();
       return;
     }
-    if (paymentMethod === "razorpay") {
-      setIsProcessing(true);
-      setTimeout(() => {
-        setIsProcessing(false);
-        setIsSuccess(true);
-        clearCart();
-      }, 3000);
-      return;
-    }
-    // COD
+
+    // COD Flow
     setIsSuccess(true);
     clearCart();
   };
@@ -255,7 +344,7 @@ export default function CheckoutPage() {
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-gray-500 block mb-1.5">Phone Number *</label>
-                  <input type="tel" required placeholder="+91 98765 43210" className="w-full px-3.5 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm bg-gray-50/50" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+                  <input type="tel" required placeholder="+91 96337 72866" className="w-full px-3.5 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm bg-gray-50/50" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} />
                 </div>
               </div>
             </div>

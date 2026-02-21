@@ -34,6 +34,8 @@ const OrderSchema = new Schema(
     },
     paymentMethod: { type: String, enum: ["Razorpay", "COD", "WhatsApp"], required: true },
     paymentStatus: { type: String, enum: ["Pending", "Paid", "Failed"], default: "Pending" },
+    razorpayOrderId: { type: String },
+    razorpayPaymentId: { type: String },
     orderStatus: {
       type: String,
       enum: ["Pending", "Confirmed", "Shipped", "Delivered", "Cancelled"],

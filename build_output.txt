@@ -1,0 +1,32 @@
+Γû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+- Experiments (use with caution):
+  ┬╖ serverActions
+
+ΓÜá The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 21.7s
+  Running TypeScript ...
+Failed to compile.
+
+./src/components/layout/Header.tsx:219:17
+Type error: Type '{ closed: { opacity: number; x: string; }; open: { opacity: number; x: number; transition: { type: string; damping: number; stiffness: number; staggerChildren: number; delayChildren: number; }; }; exit: { ...; }; }' is not assignable to type 'Variants'.
+  Property 'open' is incompatible with index signature.
+    Type '{ opacity: number; x: number; transition: { type: string; damping: number; stiffness: number; staggerChildren: number; delayChildren: number; }; }' is not assignable to type 'Variant'.
+      Type '{ opacity: number; x: number; transition: { type: string; damping: number; stiffness: number; staggerChildren: number; delayChildren: number; }; }' is not assignable to type 'TargetAndTransition'.
+        Type '{ opacity: number; x: number; transition: { type: string; damping: number; stiffness: number; staggerChildren: number; delayChildren: number; }; }' is not assignable to type '{ transition?: Transition<any> | undefined; transitionEnd?: ResolvedValues$1 | undefined; }'.
+          Types of property 'transition' are incompatible.
+            Type '{ type: string; damping: number; stiffness: number; staggerChildren: number; delayChildren: number; }' is not assignable to type 'Transition<any> | undefined'.
+              Type '{ type: string; damping: number; stiffness: number; staggerChildren: number; delayChildren: number; }' is not assignable to type 'TransitionWithValueOverrides<any>'.
+                Type '{ type: string; damping: number; stiffness: number; staggerChildren: number; delayChildren: number; }' is not assignable to type 'ValueAnimationTransition<any>'.
+                  Types of property 'type' are incompatible.
+                    Type 'string' is not assignable to type 'AnimationGeneratorType | undefined'.
+
+  217 |               {/* Slide-in Panel */}
+  218 |               <motion.div
+> 219 |                 variants={menuVariants}
+      |                 ^
+  220 |                 initial="closed"
+  221 |                 animate="open"
+  222 |                 exit="exit"
+Next.js build worker exited with code: 1 and signal: null

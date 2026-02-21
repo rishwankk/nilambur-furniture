@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useMemo, useEffect, Suspense } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useMemo, useEffect, Suspense, useRef } from "react";
+import { motion, AnimatePresence, useInView } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { FiSearch, FiFilter, FiHeart, FiShoppingCart, FiStar, FiX } from "react-icons/fi";
+import { FiSearch, FiFilter, FiHeart, FiShoppingCart, FiStar, FiX, FiGrid, FiList } from "react-icons/fi";
 import { useStore } from "@/store/store";
 import { useSearchParams } from "next/navigation";
 
@@ -34,7 +34,6 @@ function ProductsContent() {
 
   const { addToCart, toggleWishlist, wishlist } = useStore();
 
-  // Read category from URL params (after categories are loaded)
   useEffect(() => {
     const category = searchParams.get("category");
     if (category && category !== "All") {
@@ -94,59 +93,72 @@ function ProductsContent() {
   const activeFilterCount = (activeCategory !== "All" ? 1 : 0) + (priceRange < 500000 ? 1 : 0) + (search ? 1 : 0);
 
   return (
-    <div className="min-h-screen bg-soft-bg">
-      {/* Header */}
-      <div className="bg-navy text-white py-12 sm:py-16 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full opacity-20">
+    <div className="min-h-screen bg-soft-bg pb-16 md:pb-0">
+      {/* Header Banner */}
+      <div className="bg-navy text-white py-10 sm:py-12 md:py-16 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full opacity-15">
           <Image src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1600&q=80" alt="Banner" fill className="object-cover" />
         </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-navy/50" />
         <div className="container mx-auto px-4 md:px-8 relative z-10">
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold mb-3">
+          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-bold mb-2 md:mb-3">
             Premium Furniture Collection
           </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-gray-300 max-w-xl text-sm sm:text-base">
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-gray-300 max-w-xl text-xs sm:text-sm md:text-base">
             Discover our meticulously curated selection of high-end furniture designed for your unmatched comfort.
           </motion.p>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="flex flex-wrap gap-2 mt-6">
-            {categoryNames.map((cat) => (
-              <button key={cat} onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${activeCategory === cat ? "bg-teal-500 text-white shadow-lg shadow-teal-500/30" : "bg-white/10 text-white/80 hover:bg-white/20 backdrop-blur-sm"}`}
-              >{cat}</button>
-            ))}
+
+          {/* Category chips — horizontal scroll on mobile */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-5 md:mt-6">
+            <div className="snap-scroll-x md:overflow-visible flex md:flex-wrap gap-2">
+              {categoryNames.map((cat) => (
+                <button key={cat} onClick={() => setActiveCategory(cat)}
+                  className={`px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-300 whitespace-nowrap shrink-0 ${
+                    activeCategory === cat
+                      ? "bg-teal-500 text-white shadow-lg shadow-teal-500/30"
+                      : "bg-white/10 text-white/80 hover:bg-white/20 backdrop-blur-sm"
+                  }`}
+                >{cat}</button>
+              ))}
+            </div>
           </motion.div>
         </div>
       </div>
 
       {/* Toolbar */}
-      <div className="container mx-auto px-4 md:px-8 py-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden flex items-center gap-2 px-4 py-2.5 bg-gray-50 text-navy font-semibold rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors text-sm relative">
-              <FiFilter size={16} /> Filters
+      <div className="container mx-auto px-4 md:px-8 py-3 md:py-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-3 md:p-4 rounded-2xl shadow-sm border border-gray-100">
+          <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
+            <button onClick={() => setIsSidebarOpen(true)} className="lg:hidden flex items-center gap-2 px-3 md:px-4 py-2.5 bg-gray-50 text-navy font-semibold rounded-xl border border-gray-200 hover:bg-gray-100 transition-colors text-xs sm:text-sm relative whitespace-nowrap">
+              <FiFilter size={14} /> Filters
               {activeFilterCount > 0 && <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-teal-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">{activeFilterCount}</span>}
             </button>
             <div className="relative flex-1 sm:w-64">
-              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
               <input type="text" placeholder="Search furniture..." value={search} onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all text-sm" />
-              {search && <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"><FiX size={14} /></button>}
+                className="w-full pl-8 md:pl-9 pr-8 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 focus:bg-white transition-all text-xs sm:text-sm" />
+              {search && <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 min-h-[auto]"><FiX size={14} /></button>}
             </div>
           </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <h2 className="text-sm font-medium text-gray-500 hidden sm:block">{loading ? "Loading..." : `${filteredProducts.length} products`}</h2>
+          <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
+            <h2 className="text-xs sm:text-sm font-medium text-gray-500 hidden sm:block">{loading ? "Loading..." : `${filteredProducts.length} products`}</h2>
             <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium text-navy focus:outline-none focus:ring-2 focus:ring-teal-500 appearance-none cursor-pointer">
+              className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm font-medium text-navy focus:outline-none focus:ring-2 focus:ring-teal-500 appearance-none cursor-pointer flex-1 sm:flex-none">
               <option value="default">Sort: Default</option>
               <option value="price-low">Price: Low to High</option>
               <option value="price-high">Price: High to Low</option>
               <option value="rating">Top Rated</option>
               <option value="newest">Newest First</option>
             </select>
+            {/* Mobile product count */}
+            <span className="sm:hidden text-xs text-gray-400 font-medium whitespace-nowrap">
+              {loading ? "..." : `${filteredProducts.length} items`}
+            </span>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 md:px-8 pb-24 grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="container mx-auto px-4 md:px-8 pb-24 grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-6">
         {/* Desktop Sidebar */}
         <aside className="hidden lg:block lg:col-span-1">
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 sticky top-28">
@@ -223,44 +235,56 @@ function ProductsContent() {
         {/* Product Grid */}
         <div className="lg:col-span-3">
           {loading ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="w-12 h-12 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin"></div>
+            <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="bg-white rounded-2xl overflow-hidden">
+                  <div className="h-40 sm:h-52 md:h-64 shimmer" />
+                  <div className="p-3 sm:p-4 space-y-2">
+                    <div className="h-3 w-16 shimmer rounded" />
+                    <div className="h-4 w-3/4 shimmer rounded" />
+                    <div className="h-5 w-20 shimmer rounded" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
-            <motion.div layout className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+            <motion.div layout className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
               <AnimatePresence>
                 {filteredProducts.map((product) => (
-                  <motion.div layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.3 }} key={product.id}
-                    className="bg-white rounded-2xl p-3 sm:p-4 shadow-sm hover:shadow-xl transition-all duration-500 group border border-transparent hover:border-teal-100 flex flex-col">
-                    <div className="relative h-44 sm:h-56 lg:h-64 w-full rounded-xl overflow-hidden mb-3 sm:mb-4 bg-gray-50">
+                  <motion.div layout initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.3 }} key={product.id}
+                    className="bg-white rounded-2xl p-2 sm:p-3 md:p-4 shadow-sm hover:shadow-xl transition-all duration-500 group border border-transparent hover:border-teal-100 flex flex-col">
+                    <div className="relative h-40 sm:h-52 lg:h-60 xl:h-64 w-full rounded-xl overflow-hidden mb-2 sm:mb-3 md:mb-4 bg-gray-50">
                       <Image src={product.image} alt={product.name} fill className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out" />
-                      <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2 sm:gap-3 opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-300">
+                      
+                      {/* Quick Actions — always visible on mobile, hover on desktop */}
+                      <div className="absolute bottom-2 sm:bottom-3 left-0 right-0 flex justify-center gap-2 sm:gap-3 md:opacity-0 md:group-hover:opacity-100 md:translate-y-4 md:group-hover:translate-y-0 transition-all duration-300">
                         <button onClick={() => toggleWishlist(product.id)}
-                          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shadow-lg transition-colors duration-300 ${wishlist.includes(product.id) ? "bg-red-50 text-red-500" : "bg-white text-navy hover:bg-teal-600 hover:text-white"}`}>
-                          <FiHeart size={18} className={wishlist.includes(product.id) ? "fill-current" : ""} />
+                          className={`w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 active:scale-90 min-h-[auto] ${wishlist.includes(product.id) ? "bg-red-50 text-red-500" : "bg-white/90 backdrop-blur-sm text-navy hover:bg-teal-600 hover:text-white"}`}>
+                          <FiHeart size={16} className={wishlist.includes(product.id) ? "fill-current" : ""} />
                         </button>
                         <button onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, image: product.image, category: product.category })}
-                          className="w-10 h-10 sm:w-12 sm:h-12 bg-teal-600 rounded-full flex items-center justify-center text-white hover:bg-navy transition-colors shadow-lg">
-                          <FiShoppingCart size={18} />
+                          className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-teal-600 rounded-full flex items-center justify-center text-white hover:bg-navy transition-colors shadow-lg active:scale-90 min-h-[auto]">
+                          <FiShoppingCart size={16} />
                         </button>
                       </div>
+                      
                       {product.stock < 5 && product.stock > 0 && (
-                        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-100 text-red-600 text-[9px] sm:text-[10px] uppercase font-bold px-2 py-1 rounded-full">Only {product.stock} Left!</div>
+                        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-100 text-red-600 text-[8px] sm:text-[9px] md:text-[10px] uppercase font-bold px-2 py-0.5 sm:py-1 rounded-full">Only {product.stock} Left!</div>
                       )}
                     </div>
                     <Link href={`/products/${product.id}`} className="flex-grow flex flex-col justify-between">
                       <div>
                         <div className="flex justify-between items-start mb-1">
-                          <span className="text-[10px] sm:text-xs text-teal-600 font-medium tracking-wide uppercase">{product.category}</span>
-                          <div className="flex items-center gap-1 text-luxury-gold text-[10px] sm:text-xs font-semibold"><FiStar className="fill-current" /> {product.rating || "5.0"}</div>
+                          <span className="text-[9px] sm:text-[10px] md:text-xs text-teal-600 font-medium tracking-wide uppercase">{product.category}</span>
+                          <div className="flex items-center gap-0.5 text-luxury-gold text-[9px] sm:text-[10px] md:text-xs font-semibold"><FiStar className="fill-current" /> {product.rating || "5.0"}</div>
                         </div>
-                        <h3 className="font-serif font-semibold text-sm sm:text-lg text-navy mb-1 sm:mb-2 line-clamp-2 group-hover:text-teal-600 transition-colors">{product.name}</h3>
+                        <h3 className="font-serif font-semibold text-xs sm:text-sm md:text-lg text-navy mb-1 sm:mb-2 line-clamp-2 group-hover:text-teal-600 transition-colors">{product.name}</h3>
                       </div>
-                      <div className="flex flex-col mt-2 sm:mt-4">
+                      <div className="flex flex-col mt-1 sm:mt-2 md:mt-4">
                         {product.price === 0 ? (
-                          <span className="text-base sm:text-xl font-bold text-navy">Get Quote</span>
+                          <span className="text-sm sm:text-base md:text-xl font-bold text-navy">Get Quote</span>
                         ) : (
-                          <span className="text-base sm:text-xl font-bold text-navy">₹{product.price.toLocaleString("en-IN")}</span>
+                          <span className="text-sm sm:text-base md:text-xl font-bold text-navy">₹{product.price.toLocaleString("en-IN")}</span>
                         )}
                       </div>
                     </Link>
@@ -268,12 +292,12 @@ function ProductsContent() {
                 ))}
               </AnimatePresence>
               {filteredProducts.length === 0 && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-span-full py-20 text-center flex flex-col items-center">
-                  <div className="w-24 h-24 mb-6 bg-gray-50 rounded-full flex items-center justify-center text-gray-300"><FiSearch size={40} /></div>
-                  <h3 className="text-xl sm:text-2xl font-serif font-bold text-navy mb-2">No products found</h3>
-                  <p className="text-gray-500 text-sm sm:text-base">Try adjusting your filters or search terms.</p>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="col-span-full py-16 md:py-20 text-center flex flex-col items-center">
+                  <div className="w-20 h-20 md:w-24 md:h-24 mb-4 md:mb-6 bg-gray-50 rounded-full flex items-center justify-center text-gray-300"><FiSearch size={32} /></div>
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-serif font-bold text-navy mb-2">No products found</h3>
+                  <p className="text-gray-500 text-xs sm:text-sm md:text-base">Try adjusting your filters or search terms.</p>
                   <button onClick={() => { setSearch(""); setActiveCategory("All"); setPriceRange(500000); setSortBy("default"); }}
-                    className="mt-6 px-6 py-2 bg-teal-50 text-teal-700 font-semibold rounded-full hover:bg-teal-100 transition-colors">Clear All Filters</button>
+                    className="mt-4 md:mt-6 px-6 py-2 bg-teal-50 text-teal-700 font-semibold rounded-full hover:bg-teal-100 transition-colors text-sm">Clear All Filters</button>
                 </motion.div>
               )}
             </motion.div>
@@ -286,7 +310,7 @@ function ProductsContent() {
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-12 h-12 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin"></div></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-12 h-12 border-4 border-teal-200 border-t-teal-600 rounded-full animate-spin" /></div>}>
       <ProductsContent />
     </Suspense>
   );

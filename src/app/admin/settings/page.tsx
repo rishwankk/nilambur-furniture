@@ -9,7 +9,7 @@ export default function AdminSettings() {
   const [formData, setFormData] = useState({
     adminEmail: "admin@nilambur.com",
     storeName: "Nilambur Furniture",
-    supportPhone: "+91 98765 43210",
+    supportPhone: "+91 96337 72866",
     headOffice: "Nilambur, Kerala, India",
     currency: "INR (₹)"
   });

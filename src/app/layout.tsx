@@ -53,7 +53,7 @@ const jsonLd = {
     "longitude": "77.0016"
   },
   "url": "https://nilambur-furniture.com",
-  "telephone": "+918086008122",
+  "telephone": "+919633772866",
   "priceRange": "₹₹₹",
   "openingHoursSpecification": [
     {
@@ -80,7 +80,7 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning className={`${inter.variable} ${playfair.variable} font-sans antialiased flex flex-col min-h-screen bg-[#F8FAFC]`}>
         <Header />
-        <main className="flex-grow pt-[80px]">
+        <main className="flex-grow pt-[72px] md:pt-[80px]">
           {children}
         </main>
         <Footer />
