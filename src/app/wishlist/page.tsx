@@ -92,7 +92,7 @@ function WishlistContent() {
                     
                     {/* Add to Cart Overlay */}
                     <div className="absolute inset-x-0 bottom-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300 hidden md:block">
-                       <button onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, quantity: 1, image: product.image, category: product.category })}
+                       <button onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, image: product.image, category: product.category })}
                         className="w-full py-2.5 bg-teal-600/95 backdrop-blur-sm text-white rounded-xl font-semibold shadow-lg hover:bg-teal-700 flex items-center justify-center gap-2">
                         <FiShoppingCart /> Add to Cart
                        </button>
@@ -121,7 +121,7 @@ function WishlistContent() {
                   </Link>
 
                   {/* Mobile Add to Cart Button */}
-                  <button onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, quantity: 1, image: product.image, category: product.category })}
+                  <button onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, image: product.image, category: product.category })}
                     className="mt-3 w-full py-2 bg-teal-50 text-teal-700 rounded-xl font-semibold active:bg-teal-100 flex items-center justify-center gap-2 md:hidden text-sm">
                     <FiShoppingCart size={14} /> Add to Cart
                   </button>
