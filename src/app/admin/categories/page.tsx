@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiPlus, FiTrash2, FiImage, FiUploadCloud, FiX } from "react-icons/fi";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 interface Category {
   _id: string;
@@ -45,7 +46,7 @@ export default function AdminCategories() {
 
   const handleUploadFile = useCallback(async (file: File) => {
     if (!file.type.startsWith("image/") || file.size > 10 * 1024 * 1024) {
-      alert("Please select a valid image file (max 10MB).");
+      toast.error("Please select a valid image file (max 10MB).");
       return;
     }
     setUploading(true);
@@ -57,10 +58,10 @@ export default function AdminCategories() {
       if (data.success && data.urls?.[0]) {
         setFormData(prev => ({ ...prev, image: data.urls[0] }));
       } else {
-        alert(data.message || "Upload failed. Check Cloudinary credentials.");
+        toast.error(data.message || "Upload failed. Check Cloudinary credentials.");
       }
     } catch {
-      alert("Network error during upload.");
+      toast.error("Network error during upload.");
     } finally {
       setUploading(false);
     }
@@ -81,10 +82,10 @@ export default function AdminCategories() {
         setIsModalOpen(false);
         fetchCategories();
       } else {
-        alert(data.message);
+        toast.error(data.message);
       }
     } catch (error) {
-      alert("Error adding category");
+      toast.error("Error adding category");
     } finally {
       setSubmitting(false);
     }
@@ -99,10 +100,10 @@ export default function AdminCategories() {
       if (data.success) {
         setCategories(prev => prev.filter(c => c._id !== id));
       } else {
-        alert(data.message || "Failed to delete category");
+        toast.error(data.message || "Failed to delete category");
       }
     } catch {
-      alert("Network error while deleting category.");
+      toast.error("Network error while deleting category.");
     } finally {
       setDeleting(null);
     }

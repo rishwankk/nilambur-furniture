@@ -81,7 +81,8 @@ function ProductsContent() {
       const matchesSearch = product.name.toLowerCase().includes(search.toLowerCase());
       const matchesCategory = activeCategory === "All" || product.category === activeCategory;
       const matchesPrice = Number(product.price) <= priceRange;
-      return matchesSearch && matchesCategory && matchesPrice;
+      const matchesStock = search ? true : product.stock > 0;
+      return matchesSearch && matchesCategory && matchesPrice && matchesStock;
     });
     if (sortBy === "price-low") results.sort((a, b) => a.price - b.price);
     else if (sortBy === "price-high") results.sort((a, b) => b.price - a.price);
@@ -262,12 +263,21 @@ function ProductsContent() {
                           className={`w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 active:scale-90 min-h-[auto] ${wishlist.includes(product.id) ? "bg-red-50 text-red-500" : "bg-white/90 backdrop-blur-sm text-navy hover:bg-teal-600 hover:text-white"}`}>
                           <FiHeart size={16} className={wishlist.includes(product.id) ? "fill-current" : ""} />
                         </button>
-                        <button onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, image: product.image, category: product.category })}
-                          className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-teal-600 rounded-full flex items-center justify-center text-white hover:bg-navy transition-colors shadow-lg active:scale-90 min-h-[auto]">
-                          <FiShoppingCart size={16} />
-                        </button>
+                        {product.stock > 0 ? (
+                          <button onClick={() => addToCart({ id: product.id, name: product.name, price: product.price, image: product.image, category: product.category })}
+                            className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-teal-600 rounded-full flex items-center justify-center text-white hover:bg-navy transition-colors shadow-lg active:scale-90 min-h-[auto]">
+                            <FiShoppingCart size={16} />
+                          </button>
+                        ) : (
+                          <div className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 shadow-lg min-h-[auto] cursor-not-allowed">
+                            <FiShoppingCart size={16} />
+                          </div>
+                        )}
                       </div>
                       
+                      {product.stock === 0 && (
+                        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-100 text-red-600 text-[8px] sm:text-[9px] md:text-[10px] uppercase font-bold px-2 py-0.5 sm:py-1 rounded-full">Out of Stock</div>
+                      )}
                       {product.stock < 5 && product.stock > 0 && (
                         <div className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-red-100 text-red-600 text-[8px] sm:text-[9px] md:text-[10px] uppercase font-bold px-2 py-0.5 sm:py-1 rounded-full">Only {product.stock} Left!</div>
                       )}

@@ -6,6 +6,7 @@ import { FiSave, FiCheckCircle } from "react-icons/fi";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import CloudinaryUploader from "@/components/ui/CloudinaryUploader";
+import toast from "react-hot-toast";
 
 export default function AddProductPage() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function AddProductPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (formData.images.length === 0) {
-      alert("Please upload at least one product image.");
+      toast.error("Please upload at least one product image.");
       return;
     }
     
@@ -69,10 +70,10 @@ export default function AddProductPage() {
           router.push("/admin/products");
         }, 2000);
       } else {
-        alert("Error adding product: " + data.message);
+        toast.error("Error adding product: " + data.message);
       }
     } catch (err) {
-      alert("Something went wrong");
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }

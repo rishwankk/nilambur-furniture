@@ -105,7 +105,7 @@ export default function Home() {
         const res = await fetch("/api/products");
         const data = await res.json();
         if (data.success) {
-          setDbProducts(data.products.slice(0, 4).map((p: any) => ({
+          setDbProducts(data.products.filter((p: any) => p.stock > 0).slice(0, 4).map((p: any) => ({
              ...p,
              id: p._id,
              image: p.images[0] || "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&q=80"

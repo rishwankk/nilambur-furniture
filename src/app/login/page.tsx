@@ -6,6 +6,7 @@ import Image from "next/image";
 import { FiMail, FiLock, FiEye, FiEyeOff } from "react-icons/fi";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 import { GoogleOAuthProvider, useGoogleLogin } from '@react-oauth/google';
 
@@ -34,18 +35,18 @@ function LoginContent() {
           }, 1000);
         } else {
           setIsGoogleLoading(false);
-          alert(data.message || "Google Login failed");
+          toast.error(data.message || "Google Login failed");
         }
       } catch (e) {
         console.error(e);
         setIsGoogleLoading(false);
-        alert("Server error during Google Login");
+        toast.error("Server error during Google Login");
       }
     },
     onError: () => {
       console.error("Google login failed");
       setIsGoogleLoading(false);
-      alert("Failed to connect to Google");
+      toast.error("Failed to connect to Google");
     }
   });
 

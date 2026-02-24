@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { FiPlus, FiEdit, FiTrash2, FiSearch } from "react-icons/fi";
 import Image from "next/image";
 import { Product } from "@/app/products/page";
+import toast from "react-hot-toast";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -125,10 +126,48 @@ export default function AdminProducts() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-2 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors">
+                        <button 
+                          onClick={async () => {
+                            const val = prompt(`Enter new stock for ${product.name}:`, product.stock.toString());
+                            if (val === null) return;
+                            const newStock = parseInt(val, 10);
+                            if (isNaN(newStock) || newStock < 0) {
+                              toast.error('Invalid stock');
+                              return;
+                            }
+                            try {
+                              const res = await fetch(`/api/products/${product.id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ stock: newStock })
+                              });
+                              if(res.ok) fetchProducts();
+                            } catch (e) { console.error(e); }
+                          }}
+                          className="px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 rounded"
+                        >
+                          Update Stock
+                        </button>
+                        <button 
+                          onClick={async () => {
+                            if (!confirm(`Mark ${product.name} as out of stock?`)) return;
+                            try {
+                              const res = await fetch(`/api/products/${product.id}`, {
+                                method: 'PUT',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ stock: 0 })
+                              });
+                              if(res.ok) fetchProducts();
+                            } catch (e) { console.error(e); }
+                          }}
+                          className="px-2 py-1 text-xs font-semibold bg-orange-100 text-orange-600 hover:bg-orange-200 rounded"
+                        >
+                          Out of Stock
+                        </button>
+                        <button className="p-2 text-gray-400 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors" title="Edit Product">
                           <FiEdit size={16} />
                         </button>
-                        <button onClick={() => handleDelete(product.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        <button onClick={() => handleDelete(product.id)} className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Delete Product">
                           <FiTrash2 size={16} />
                         </button>
                       </div>

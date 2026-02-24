@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/db";
 import { Order } from "@/models/Order";
+import { Product } from "@/models/Product";
 import { sendOrderConfirmation, sendAdminOrderNotification } from "@/lib/email";
 
 export async function GET() {
@@ -19,6 +20,14 @@ export async function POST(req: Request) {
     await connectToDatabase();
     const body = await req.json();
     const newOrder = await Order.create(body);
+
+    if (body.items && Array.isArray(body.items)) {
+      for (const item of body.items) {
+        if (item.id) {
+          await Product.findByIdAndUpdate(item.id, { $inc: { stock: -(item.quantity || 1) } });
+        }
+      }
+    }
 
     const email = body.customerInfo?.email || body.guestEmail;
     const shippingStr = body.shippingAddress

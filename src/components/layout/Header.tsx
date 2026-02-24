@@ -79,6 +79,8 @@ export default function Header() {
     open: { opacity: 1, x: 0, y: 0, transition: { type: "spring" as const, damping: 20 } },
   };
 
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
     <>
       <header

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { FiMapPin, FiPhone, FiMail, FiInstagram, FiFacebook, FiTwitter, FiArrowRight, FiHeart } from "react-icons/fi";
@@ -24,6 +25,10 @@ function FooterSection({ children, delay = 0, className = "" }: { children: Reac
 }
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith("/admin")) return null;
+
   return (
     <footer className="bg-navy text-white pt-12 md:pt-16 pb-24 md:pb-8 border-t-4 border-teal-600 relative overflow-hidden">
       {/* Background decoration */}

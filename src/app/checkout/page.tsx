@@ -6,6 +6,7 @@ import { useStore } from "@/store/store";
 import { FiCheckCircle, FiPackage, FiCreditCard, FiMessageCircle, FiLock, FiTag, FiX, FiLoader, FiShoppingBag, FiArrowLeft } from "react-icons/fi";
 import Link from "next/link";
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 export default function CheckoutPage() {
   const { cart, clearCart } = useStore();
@@ -70,7 +71,7 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     if (!formData.email || !formData.name || !formData.phone || !formData.address || !formData.city || !formData.postalCode) {
-      alert("Please fill in all required fields.");
+      toast.error("Please fill in all required fields.");
       return;
     }
 
@@ -116,7 +117,7 @@ export default function CheckoutPage() {
       setIsProcessing(true);
       const res = await loadRazorpay();
       if (!res) {
-        alert("Razorpay SDK failed to load. Please check your connection.");
+        toast.error("Razorpay SDK failed to load. Please check your connection.");
         setIsProcessing(false);
         return;
       }
@@ -131,7 +132,7 @@ export default function CheckoutPage() {
         const orderData = await orderResponse.json();
 
         if (orderData.error) {
-          alert("Could not create Razorpay order.");
+          toast.error("Could not create Razorpay order.");
           setIsProcessing(false);
           return;
         }
@@ -160,7 +161,7 @@ export default function CheckoutPage() {
                setIsSuccess(true);
                clearCart();
              } else {
-               alert("Payment verification failed. Please contact support.");
+               toast.error("Payment verification failed. Please contact support.");
                await saveOrderToDB("Failed", response);
                setIsProcessing(false);
              }
@@ -183,7 +184,7 @@ export default function CheckoutPage() {
 
       } catch (err) {
         console.error(err);
-        alert("An error occurred starting payment.");
+        toast.error("An error occurred starting payment.");
         setIsProcessing(false);
       }
       return;
